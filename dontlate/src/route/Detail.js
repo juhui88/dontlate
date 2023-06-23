@@ -29,7 +29,20 @@ const Detail = () => {
         setStations(res.data.direct_id);
       })
       .catch((err) => console.log(err));
-  });
+  }, []);
+
+  useEffect(() => {
+    axios
+      .post(
+        `${process.env.REACT_APP_BASE_URL}post/6dafd7d0-be03-4936-bcb5-b76e89d48329`,
+        {
+          title: "하윙",
+          content: "바윙",
+        }
+      )
+      .then((res) => console.log(res))
+      .catch((err) => console.log(err));
+  }, []);
   return (
     <Layout>
       <Bar />
