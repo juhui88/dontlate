@@ -3,7 +3,8 @@ import { useForm } from "react-hook-form";
 import styled from "styled-components";
 import tw from "tailwind-styled-components";
 import Button from "../components/Button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Backgorund = styled.div`
   background-image: url("img/mainImg.png");
@@ -20,15 +21,28 @@ const Input = tw.input`
 `;
 const Login = () => {
   const { register, handleSubmit, reset } = useForm();
+  const navigate = useNavigate();
   const onValid = (data) => {
     console.log(data);
+    axios
+      .post(`${process.env.REACT_APP_BASE_URL}auth/login`, {
+        email: data.email,
+        password: data.pw,
+      })
+      .then((res) => {
+        console.log(res);
+        localStorage.setItem("token", res.data.accessToken);
+        localStorage.setItem("id", res.data.id);
+        navigate("/home");
+      })
+      .catch((err) => console.log(err));
   };
   return (
     <div className="flex h-screen w-screen">
       <div className="hidden sm:hidden md:flex flex-col px-10 items-center justify-center">
-        <img src="img/가치노라메인로고.png" className="" />
+        <img src="img/늦지마요메인로고.png" className="h-14" />
         <span className="text-lg text-mainColor font-bold">
-          내 아이의 건강한 성장, 안전하게 즐겨보세요!
+          조급한 등교생활 이제 그만!
         </span>
       </div>
       <Backgorund className="flex-grow relative h-screen px-10">
@@ -40,7 +54,7 @@ const Login = () => {
             <Input
               placeholder="아이디"
               className="rounded-t-md"
-              {...register("id")}
+              {...register("email")}
             />
             <Input
               placeholder="비밀번호"

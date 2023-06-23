@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Bar, { Layout } from "../components/Bar";
 import img from "../playgroundImg/playground1.jpg";
 import tw from "tailwind-styled-components";
@@ -6,6 +6,8 @@ import { Link, Route, Routes, useLocation } from "react-router-dom";
 import Notice from "../components/detailComponents/Notice";
 import Chat from "../components/detailComponents/Chat";
 import { cls } from "../lib/utils";
+import axios from "axios";
+import Map from "../components/Map";
 
 const Item = tw.div`
 p-3
@@ -17,13 +19,23 @@ cursor-pointer font-bold text-textAssisColor
 `;
 const Detail = () => {
   const location = useLocation();
-  const match = location.pathname.split("/")[3];
+  const match = location.pathname.split("/");
+  const [stations, setStations] = useState();
+
+  useEffect(() => {
+    axios
+      .get(`${process.env.REACT_APP_BASE_URL}map/direct/${match[2]}`)
+      .then((res) => {
+        setStations(res.data.direct_id);
+      })
+      .catch((err) => console.log(err));
+  });
   return (
     <Layout>
       <Bar />
       <div className="text-textColor shadow-lg">
-        <div>
-          <img src={img} className="w-full h-80  object-cover " />
+        <div className="산아 여기야!! h-80">
+          <Map stations={stations} />
         </div>
 
         <div className="px-5 md:px-44 bg-bgColor w-full pt-2 pb-5">
@@ -69,7 +81,9 @@ const Detail = () => {
         </div>
         <div className="px-44 bg-white rounded-t-lg flex justify-between ">
           <Link to="notice" className="w-full h-full ">
-            <Item className={cls(match === "notice" ? "text-mainColor" : "")}>
+            <Item
+              className={cls(match[3] === "notice" ? "text-mainColor" : "")}
+            >
               공지
             </Item>
           </Link>
@@ -77,7 +91,7 @@ const Detail = () => {
             <Item
               className={cls(
                 "border-r",
-                match === "chat" ? "text-mainColor" : ""
+                match[3] === "chat" ? "text-mainColor" : ""
               )}
             >
               채팅

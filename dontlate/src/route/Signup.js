@@ -4,6 +4,8 @@ import { cls } from "../lib/utils";
 import Button from "../components/Button";
 import { useForm } from "react-hook-form";
 import { Layout } from "../components/Bar";
+import axios from "axios";
+import { useHistory, useNavigate } from "react-router-dom";
 
 const Input = tw.input`
 bg-bgColor
@@ -25,6 +27,7 @@ const Signup = () => {
   const [profileImgNum, setProfileImgNum] = useState(0);
   const [next, setNext] = useState(false);
   const [isPerfect, setIsPerfect] = useState(false);
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -44,13 +47,26 @@ const Signup = () => {
 
   const onValid = (data) => {
     if (data.password !== data.password1) {
-      setError("password1", { message: "비밀번호가 일치하지 않습니다" });
+      setError("password1", { message: "비밀번호가 일치하지 않습니다" }, {});
+      return;
     }
-    console.log(data);
+    axios
+      .post(`${process.env.REACT_APP_BASE_URL}auth/register`, {
+        name: data.nickName,
+        email: data.email,
+        phoneNumber: data.phoneNumber,
+        password: data.password,
+        profile_img_num: parseInt(profileImgNum),
+      })
+      .then((res) => {
+        console.log(res);
+        navigate("/");
+      })
+      .catch((err) => console.log(err));
   };
   useEffect(() => {
     if (
-      watch("id") !== "" &&
+      watch("email") !== "" &&
       watch("password") !== "" &&
       watch("password1") !== "" &&
       watch("name") !== "" &&
@@ -66,7 +82,7 @@ const Signup = () => {
   return (
     <Layout>
       <div className="pt-5 text-textColor px-10">
-        <img src="img/가치노라메인로고.png" className="mx-auto" />
+        <img src="img/늦지마요메인로고.png" className="mx-auto h-10" />
         <div className="mt-10 mb-7">
           <div className="flex flex-col space-y-4">
             <span className="text-3xl font-bold ">회원가입</span>
@@ -79,12 +95,12 @@ const Signup = () => {
               <form onSubmit={handleSubmit(onValid)} className="space-y-3">
                 <InputWrap>
                   <span>* 아이디</span>
-                  {errors?.id ? (
-                    <ErrorSpan>{errors.id?.message}</ErrorSpan>
+                  {errors?.email ? (
+                    <ErrorSpan>{errors.email?.message}</ErrorSpan>
                   ) : null}
                   <Input
                     placeholder="아이디 입력(@example.com)"
-                    {...register("id", {
+                    {...register("email", {
                       required: "아이디를 입력해주세요",
                       pattern: {
                         value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
@@ -126,15 +142,6 @@ const Signup = () => {
                     placeholder="비밀번호 재입력"
                     {...register("password1", {
                       required: true,
-                    })}
-                  />
-                </InputWrap>
-                <InputWrap>
-                  <span>* 이름</span>
-                  <Input
-                    placeholder="이름을 입력해주세요"
-                    {...register("name", {
-                      required: "이름을 입력해주세요!",
                     })}
                   />
                 </InputWrap>

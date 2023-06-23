@@ -32,12 +32,12 @@ const Chat = () => {
 
   const onValid = (data) => {};
   return (
-    <div className="px-2 md:px-40 mt-2  ">
+    <div className="px-2 md:mx-40 mt-2  min-h-[320px] relative">
       <span className="flex justify-center font-bold  text-textColor">
         2023.06.23
       </span>
-      <div className="flex flex-col">
-        <div className=" py-5 space-y-7">
+      <div className="flex flex-col h-full">
+        <div className=" py-5 space-y-7 mb-10">
           <div className="relative">
             <div className="flex items-end space-x-2">
               <div className="bg-gray-100 text-textColor font-bold text-sm p-4 rounded-lg w-4/5">
@@ -58,17 +58,44 @@ const Chat = () => {
             </div>
             <TriangleRight />
           </div>
+          <div className="relative">
+            <div className="flex items-end space-x-2 justify-end">
+              <span className="text-textColor text-xs">시간</span>
+              <div className="bg-gray-100 text-textColor font-bold text-sm p-4 rounded-lg w-4/5">
+                넹~ 감사합니다
+              </div>
+            </div>
+            <TriangleRight />
+          </div>
+          <div className="relative">
+            <div className="flex items-end space-x-2 justify-end">
+              <span className="text-textColor text-xs">시간</span>
+              <div className="bg-gray-100 text-textColor font-bold text-sm p-4 rounded-lg w-4/5">
+                넹~ 감사합니다
+              </div>
+            </div>
+            <TriangleRight />
+          </div>
+          <div className="relative">
+            <div className="flex items-end space-x-2 justify-end">
+              <span className="text-textColor text-xs">시간</span>
+              <div className="bg-gray-100 text-textColor font-bold text-sm p-4 rounded-lg w-4/5">
+                넹~ 감사합니다
+              </div>
+            </div>
+            <TriangleRight />
+          </div>
         </div>
 
         <form
-          className="relative bg-red-300 flex justify-center items-center"
+          className=" bg-red-300 flex justify-center items-center"
           onClick={handleSubmit(onValid)}
         >
           <input
             className="h-10 border-mainColor border-2 rounded-md w-full sm:w-5/6 md:w-[420px] absolute bottom-0"
             {...register("chat")}
           />
-          <button className="absolute right-0">
+          <button className="absolute right-5 bottom-2">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
