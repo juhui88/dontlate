@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Bar, { Layout } from "../components/Bar";
 import img from "../playgroundImg/playground1.jpg";
 import tw from "tailwind-styled-components";
@@ -8,6 +8,9 @@ import Chat from "../components/detailComponents/Chat";
 import { cls } from "../lib/utils";
 import axios from "axios";
 import Map from "../components/Map";
+import { useRecoilState } from "recoil";
+import { changeState } from "../components/atom";
+const { kakao } = window;
 
 const Item = tw.div`
 p-3
@@ -21,39 +24,59 @@ const Detail = () => {
   const location = useLocation();
   const match = location.pathname.split("/");
   const [stations, setStations] = useState();
-
+  const [positions, setPositions] = useState();
+  const [change, setChange] = useRecoilState(changeState);
+  const mapRef = useRef();
   useEffect(() => {
     axios
       .get(`${process.env.REACT_APP_BASE_URL}map/direct/${match[2]}`)
       .then((res) => {
+        console.log(res);
         setStations(res.data.direct_id);
+        var options = {
+          center: new kakao.maps.LatLng(
+            res.data.direct_id[0].lat,
+            res.data.direct_id[0].long
+          ),
+          level: 7,
+        };
+        var map = new kakao.maps.Map(mapRef.current, options);
+
+        var imageSrc =
+          "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png";
+
+        for (var i = 0; i < res.data.direct_id.length; i++) {
+          var imageSize = new kakao.maps.Size(24, 35);
+          var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize);
+          var marker = new kakao.maps.Marker({
+            map: map, // 마커를 표시할 지도
+            position: new kakao.maps.LatLng(
+              res.data.direct_id[i].lat,
+              res.data.direct_id[i].long
+            ), // 마커를 표시할 위치
+            title: res.data.direct_id[i].title, // 마커의 타이틀, 마커에 마우스를 올리면 타이틀이 표시됩니다
+            image: markerImage, // 마커 이미지
+          });
+          marker.setMap(map);
+        }
       })
       .catch((err) => console.log(err));
-  }, []);
+  }, [change, setChange]);
 
-  useEffect(() => {
-    axios
-      .post(
-        `${process.env.REACT_APP_BASE_URL}post/6dafd7d0-be03-4936-bcb5-b76e89d48329`,
-        {
-          title: "하윙",
-          content: "바윙",
-        }
-      )
-      .then((res) => console.log(res))
-      .catch((err) => console.log(err));
-  }, []);
   return (
     <Layout>
       <Bar />
       <div className="text-textColor shadow-lg">
-        <div className="산아 여기야!! h-80">
-          <Map stations={stations} />
+        <div className=" h-80">
+          <div className="w-full h-full relative">
+            <div ref={mapRef} style={{ width: "100%", height: "100%" }}></div>
+          </div>
         </div>
-
         <div className="px-5 md:px-44 bg-bgColor w-full pt-2 pb-5">
           <div className="flex justify-between">
-            <span className="text-xl font-bold ">서현-학교행</span>
+            <span className="text-xl font-bold ">
+              {stations ? stations[0].direct : null}
+            </span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -89,7 +112,14 @@ const Detail = () => {
                 d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"
               />
             </svg>
-            <span>서울시 송파구 송파2동 잠실대로 11길 1</span>
+            <div>
+              {stations?.map((station) => (
+                <div className="flex justify-between space-x-5">
+                  <span>{station.title}</span>
+                  <span>{station.stop_time}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
         <div className="px-44 bg-white rounded-t-lg flex justify-between ">
@@ -113,8 +143,14 @@ const Detail = () => {
         </div>
       </div>
       <Routes>
-        <Route path="/notice" element={<Notice />} />
-        <Route path="/chat" element={<Chat />} />
+        <Route
+          path="/notice"
+          element={<Notice postId={stations ? stations[0].id : null} />}
+        />
+        <Route
+          path="/chat"
+          element={<Chat postId={stations ? stations[1].id : null} />}
+        />
       </Routes>
     </Layout>
   );
