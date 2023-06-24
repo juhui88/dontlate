@@ -109,7 +109,7 @@ const Review = ({ postId }) => {
         <div className="flex flex-col">
           <span className="text-mainColor font-bold">⚐ 공지사항</span>
           <span className="text-textAssisColor text-sm">
-            총 {posts?.length}건의 공지사항이 있습니다
+            총 {posts ? posts.length : 0}건의 공지사항이 있습니다
           </span>
 
           <div className="px-3 ">
@@ -124,7 +124,7 @@ const Review = ({ postId }) => {
       )}
       <div
         onClick={onClick}
-        className="fixed bottom-3 right-10 px-4 py-2 shadow-xl border-2 border-mainColor text-mainColor bg-white cursor-pointer hover:bg-mainColor hover:text-white rounded-3xl text-xl font-bold"
+        className="fixed bottom-3 right-80 px-4 py-2 shadow-xl border-2 border-mainColor text-mainColor bg-white cursor-pointer hover:bg-mainColor hover:text-white rounded-3xl text-xl font-bold"
       >
         추가하기
       </div>
